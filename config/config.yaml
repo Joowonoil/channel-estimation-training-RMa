@@ -1,0 +1,74 @@
+dataset:
+#  channel_type: ["InF_Los_10000", "InF_NLOS_10000", "RMa_Los_10000",]
+  channel_type: ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos", "UMi_Los", "UMi_NLos"]
+#  phase_noise_type: ["A", "B", "C"]
+  batch_size: 32
+  noise_spectral_density: -174.0  # dBm/Hz
+  subcarrier_spacing: 120.0  # kHz
+  transmit_power: 30.0  # dBm
+  distance_range: [10.0, 500.0]  # meter
+  carrier_freq: 28.0  # GHz
+  mod_order: 64
+  ref_conf_dict:
+    'dmrs': [0, 3072, 6]
+#    'ptrs': [6, 3072, 48]
+  fft_size: 4096
+  num_guard_subcarriers: 1024
+  num_symbol: 14
+  cp_length: 590  # cyclic prefix length (ns)
+  max_random_tap_delay_cp_proportion: 0.2  # random tap delay in proportion of CP length
+  rnd_seed: 0
+  num_workers: 0
+  is_phase_noise: False
+  is_channel: True
+  is_noise: True
+
+training:
+  lr: 0.0001
+  weight_decay: 0.000001
+  max_norm: 1.0
+  num_iter: 1000000
+  logging_step: 10
+  evaluation_step: 1000
+  evaluation_batch_size: 4
+  pn_train_start_iter: 1000
+  use_scheduler: False
+  num_warmup_steps: 0 # warm-up 단계 수 추가
+  # scheduler: cyclic    # 스케줄러 정보 추가
+  # base_lr: 0.0000005    # CyclicLR 최소 학습률 0.000001
+  # max_lr: 0.00001      # CyclicLR 최대 학습률  0.00002
+  # step_size_up: 4000   # 학습률 증가 주기
+
+ch_estimation:
+  cond:
+    length: 3072
+    in_channels: 2
+    step_size: 12   # 1224 64 → 128    128 → 64 → 6 → 4
+    steps_per_token: 1 # 토큰 당 학습 단계 증가 (1 → 2) # 1224 2 → 1  1 → 2 → 3
+  transformer:
+    length: 3072
+    channels: 2
+    num_layers: 4        # 레이어 수 증가1 (2 → 4) 레이어 수 증가2 (4 → 6) # 1224 6 → 4  # 250103 4 → 6 → 8
+    d_model: 128         # 모델 차원 증가 (128 → 256) # 1224 256 → 128 # 모델 차원 증가 128 → 256
+    n_token: 256        # 1224 256 → 24 → 256
+    n_head: 8            # 헤드 수 증가 (4 → 8) 헤드 수 증가2 (8 → 16) # 1224 16 → 8 # 헤드 수 증가 (8 → 12 → 16)
+    dim_feedforward: 1024 # FFN 차원 증가1 (128 → 256) FFN 차원 증가2 (256 → 512) FFN 차원 증가3 (512 → 1024) # 1224 1024 → 512 FFN 차원 증가3 (512 → 1024 → 2048)
+    dropout: 0.1         # 드롭아웃 0.1 → 0.2
+    activation: 'relu'   # 활성화 함수 변경 (relu → gelu)
+
+#pn_estimation:
+#  cond:
+#    length: 896
+#    in_channels: 2
+#    step_size: 64
+#    steps_per_token: 1
+#  transformer:
+#    length: 14
+#    channels: 1
+#    num_layers: 2        # 레이어 수 증가 (2 → 3)
+#    d_model: 32          # 모델 차원 증가 (32 → 64)
+#    n_token: 14
+#    n_head: 2            # 유지 (복잡도 적절히 제한)
+#    dim_feedforward: 128 # FFN 차원 증가 (32 → 128)
+#    dropout: 0.1         # 드롭아웃 추가
+#    activation: 'relu'

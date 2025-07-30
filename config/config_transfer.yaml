@@ -1,0 +1,86 @@
+dataset:
+  channel_type: ["InF_Los_50000"]
+#  channel_type: ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos", "UMi_Los", "UMi_NLos"]
+#  phase_noise_type: ["A", "B", "C"]
+  batch_size: 32
+  noise_spectral_density: -174.0  # dBm/Hz
+  subcarrier_spacing: 120.0  # kHz
+  transmit_power: 30.0  # dBm
+  distance_range: [5.0, 100.0]  # meter
+  carrier_freq: 28.0  # GHz
+  mod_order: 64
+  ref_conf_dict:
+    'dmrs': [0, 3072, 6]
+#    'ptrs': [6, 3072, 48]
+  fft_size: 4096
+  num_guard_subcarriers: 1024
+  num_symbol: 14
+  cp_length: 590  # cyclic prefix length (ns)
+  max_random_tap_delay_cp_proportion: 0.2  # random tap delay in proportion of CP length
+  rnd_seed: 0
+  num_workers: 0
+  is_phase_noise: False
+  is_channel: True
+  is_noise: True
+  validation_data_path: 'validation/validation_sample_data_InF_Los_withoutPN_100m' # 검증 데이터셋 경로
+
+training:
+  lr: 0.00001
+  weight_decay: 0.000001
+  max_norm: 1.0
+  num_iter: 50000
+  logging_step: 10
+  evaluation_step: 1000
+  evaluation_batch_size: 4
+  pn_train_start_iter: 1000
+  use_scheduler: False
+  scheduler: cyclic    # 스케줄러 정보 추가
+  base_lr: 0.0000005    # CyclicLR 최소 학습률 0.000001
+  max_lr: 0.00001      # CyclicLR 최대 학습률  0.00002
+  step_size_up: 4000   # 학습률 증가 주기
+  use_early_stopping: True # Early Stopping 사용 여부
+  patience: 500 # Early Stopping patience
+  delta: 0.0001 # Early Stopping delta
+  checkpoint_path: 'saved_model/checkpoint.pt' # Early Stopping 체크포인트 경로
+  early_stopping_verbose: True # Early Stopping 상세 출력 여부
+  device: 'cuda:0' # 사용할 디바이스
+  use_wandb: True # WandB 사용 여부
+  wandb_proj: 'DNN_channel_estimation_Transfer_Learning' # WandB 프로젝트 이름
+  pretrained_model_name: 'InF_RMa_Los_25000_estimator' # 로드할 사전 훈련된 모델 이름
+  ch_loss_weight: 1 # 채널 손실 가중치
+  saved_model_name: 'V2_InF_RMa_Transfer2InF_Frz2of4_estimator' # 저장할 모델 이름
+  num_freeze_layers: 2 # 프리징할 Transformer 레이어 수
+
+ch_estimation:
+  cond:
+    length: 3072
+    in_channels: 2
+    step_size: 12   # 1224 64 → 128    128 → 64 → 6 → 4
+    steps_per_token: 1 # 토큰 당 학습 단계 증가 (1 → 2) # 1224 2 → 1  1 → 2 → 3
+  transformer:
+    length: 3072
+    channels: 2
+    num_layers: 4        
+    d_model: 128         # 모델 차원 증가 (128 → 256) # 1224 256 → 128 # 모델 차원 증가 128 → 256
+    n_token: 256        # 1224 256 → 24 → 256
+    n_head: 8            # 헤드 수 증가 (4 → 8) 헤드 수 증가2 (8 → 16) # 1224 16 → 8 # 헤드 수 증가 (8 → 12 → 16)
+    dim_feedforward: 1024 # FFN 차원 증가1 (128 → 256) FFN 차원 증가2 (256 → 512) FFN 차원 증가3 (512 → 1024) # 1224 1024 → 512 FFN 차원 증가3 (512 → 1024 → 2048)
+    dropout: 0.1         # 드롭아웃 0.1 → 0.2
+    activation: 'relu'   # 활성화 함수 변경 (relu → gelu)
+
+#pn_estimation:
+#  cond:
+#    length: 896
+#    in_channels: 2
+#    step_size: 64
+#    steps_per_token: 1
+#  transformer:
+#    length: 14
+#    channels: 1
+#    num_layers: 2        # 레이어 수 증가 (2 → 3)
+#    d_model: 32          # 모델 차원 증가 (32 → 64)
+#    n_token: 14
+#    n_head: 2            # 유지 (복잡도 적절히 제한)
+#    dim_feedforward: 128 # FFN 차원 증가 (32 → 128)
+#    dropout: 0.1         # 드롭아웃 추가
+#    activation: 'relu'

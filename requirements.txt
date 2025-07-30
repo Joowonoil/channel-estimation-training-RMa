@@ -1,0 +1,33 @@
+# Core PyTorch and Deep Learning (CUDA 12.1 compatible)
+torch==2.4.1+cu121
+torchvision==0.19.1+cu121
+torchaudio==2.4.1+cu121
+torch-tensorrt>=2.4.0
+
+# Scientific Computing
+numpy>=1.26.0
+scipy>=1.14.0
+matplotlib>=3.9.0
+
+# YAML Configuration
+PyYAML>=6.0.2
+
+# Tensor Operations
+einops>=0.8.0
+
+# Machine Learning Utilities
+transformers>=4.44.0
+peft>=0.7.0
+wandb>=0.17.8
+torchsummary>=1.5.1
+
+# TensorRT and ONNX (for model optimization)
+tensorrt>=10.1.0
+onnx>=1.14.0
+onnxruntime-gpu>=1.18.0
+pycuda>=2024.1.0
+logzero>=1.7.0
+
+# Other Utilities
+pathlib  # Built-in, no version needed
+tqdm>=4.66.5
