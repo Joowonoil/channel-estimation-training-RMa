@@ -243,8 +243,8 @@ class ValidationDataset(IterableDataset):
 if __name__ == "__main__":
     param_dict = {
         'channel_type': ["RMa_Los_50000"],
-        # 'channel_type': ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos",
-        #                  "UMi_Los", "UMi_NLos"],
+        # 'channel_type': ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos",
+        #                  "UMi_Los", "UMi_Nlos"],
         'phase_noise_type': ["A", "B", "C"],
         'batch_size': 32, # 훈련 시 사용할 batch_size
         'noise_spectral_density': -174.0,  # dBm/Hz

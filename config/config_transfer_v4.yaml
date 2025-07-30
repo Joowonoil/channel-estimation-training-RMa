@@ -1,8 +1,8 @@
 # 데이터셋 관련 설정
 dataset:
 #  channel_type: ["RMa_Los_50000"] # 사용할 채널 타입 목록 (RMa_Los_50000 데이터셋 사용)
-  channel_type: ["InF_Los_50000", "InF_NLOS_50000"]
-#  channel_type: ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos", "UMi_Los", "UMi_NLos"] # 더 다양한 채널 타입 예시 (주석 처리됨)
+  channel_type: ["InF_Los_50000", "InF_Nlos_50000"]
+#  channel_type: ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos", "UMi_Los", "UMi_Nlos"] # 더 다양한 채널 타입 예시 (주석 처리됨)
 #  phase_noise_type: ["A", "B", "C"] # 위상 잡음 타입 목록 (주석 처리됨)
   batch_size: 32 # 학습 및 검증에 사용할 배치 크기
   noise_spectral_density: -174.0  # dBm/Hz # 잡음 스펙트럼 밀도 설정

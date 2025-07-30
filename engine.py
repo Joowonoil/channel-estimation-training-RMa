@@ -169,7 +169,7 @@ if __name__ == "__main__":
     # Training
     conf_file = 'config.yaml'
     engine = Engine(conf_file, device='cuda:0', use_wandb=True, wandb_proj='DNN_channel_estimation')
-    # engine.load_model('InF_NLOS_RMa_Large_estimator')
+    # engine.load_model('InF_Nlos_RMa_Large_estimator')
     engine.train()
 
     # # Model summary

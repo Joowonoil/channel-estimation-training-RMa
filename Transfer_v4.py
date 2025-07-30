@@ -361,7 +361,7 @@ class TransferLearningEngine: # 전이 학습 엔진 클래스 정의
 if __name__ == "__main__": # 스크립트 직접 실행 시 실행되는 코드 블록
     #torch.autograd.set_detect_anomaly(True) # 자동 미분 이상 감지 활성화 (주석 처리됨)
     param_dict = { # 데이터셋 파라미터 딕셔너리 정의
-        'channel_type': ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos",
+        'channel_type': ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos",
                          "UMi_Los", "UMi_Nlos"], # 채널 타입 목록
         'phase_noise_type': ["A", "B", "C"], # 위상 잡음 타입 목록
         'batch_size': 32, # 배치 크기

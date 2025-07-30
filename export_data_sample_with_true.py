@@ -51,9 +51,9 @@ def export_true_data(data, file_name):
 if __name__ == "__main__":
     param_dict = {
         # 'channel_type': ["RMa_Los_10000"],
-        'channel_type': ["InF_Los_10000", "InF_NLOS_50000"],
-        # 'channel_type': ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos",
-        #                  "UMi_Los", "UMi_NLos"],
+        'channel_type': ["InF_Los_10000", "InF_Nlos_50000"],
+        # 'channel_type': ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos",
+        #                  "UMi_Los", "UMi_Nlos"],
         # 'phase_noise_type': ["A", "B", "C"],
         'batch_size': 1024,
         'noise_spectral_density': -174.0,  # dBm/Hz

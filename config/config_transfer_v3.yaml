@@ -1,7 +1,7 @@
 dataset:
   channel_type: ["RMa_Los_50000"]
-#  channel_type: ["InF_Los_50000", "InF_NLOS_50000"]
-#  channel_type: ["InF_Los", "InF_NLos", "InH_Los", "InH_NLos", "RMa_Los", "RMa_NLos", "UMa_Los", "UMa_NLos", "UMi_Los", "UMi_NLos"]
+#  channel_type: ["InF_Los_50000", "InF_Nlos_50000"]
+#  channel_type: ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos", "UMi_Los", "UMi_Nlos"]
 #  phase_noise_type: ["A", "B", "C"]
   batch_size: 32
   noise_spectral_density: -174.0  # dBm/Hz
@@ -45,12 +45,12 @@ training:
   device: 'cuda:0' # 사용할 디바이스
   use_wandb: True # WandB 사용 여부
   wandb_proj: 'DNN_channel_estimation_Transfer_Learning_paper' # WandB 프로젝트 이름 (v3로 변경)
-  pretrained_model_name: 'InF_NLOS_RMa_Large_estimator_2_RMa' # 로드할 사전 훈련된 모델 이름 (기존과 동일)
+  pretrained_model_name: 'InF_Nlos_RMa_Large_estimator_2_RMa' # 로드할 사전 훈련된 모델 이름 (기존과 동일)
   ch_loss_weight: 1 # 채널 손실 가중치
-  saved_model_name: 'InF_NLOS_RMa_Large_estimator_2_RMa' # 저장할 모델 이름 (v3 및 Adapter 반영)
+  saved_model_name: 'InF_Nlos_RMa_Large_estimator_2_RMa' # 저장할 모델 이름 (v3 및 Adapter 반영)
   num_freeze_layers: 4 # Adapter 방식을 사용하므로 Transformer 레이어 프리징은 4로 설정
   model_load_mode: 'finetune' # 모델 로드 방식 선택: 'pretrained' 또는 'finetune'
-  load_model_path: 'saved_model/InF_NLOS_RMa_Large_estimator_2_RMa.pt' # 'finetune' 모드일 때 불러올 모델 경로 (예: 'saved_model/your_model_name.pt')
+  load_model_path: 'saved_model/InF_Nlos_RMa_Large_estimator_2_RMa.pt' # 'finetune' 모드일 때 불러올 모델 경로 (예: 'saved_model/your_model_name.pt')
 
 ch_estimation:
   cond:

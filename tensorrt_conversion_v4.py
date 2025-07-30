@@ -249,7 +249,7 @@ if __name__ == "__main__":
 
 
     # Compile estimator
-    file_name = "InF_NLOS_RMa_Large_estimator_PreLN_LoRA_RMa"
+    file_name = "InF_Nlos_RMa_Large_estimator_PreLN_LoRA_RMa"
     input_shape = (14, 3072, 2)
     batch_size = 8
     # input_tensor = torch.tensor((batch_size, *input_shape)).cuda() # 이 부분은 ONNX export에서 사용되므로 주석 처리
@@ -257,7 +257,7 @@ if __name__ == "__main__":
                                         fp16=False)
 
     # # Transformer channel model inference test
-    file_name = "InF_NLOS_RMa_Large_estimator_PreLN_LoRA_RMa"
+    file_name = "InF_Nlos_RMa_Large_estimator_PreLN_LoRA_RMa"
     input_shape = (14, 3072, 2)
     batch_size = 4
     input_tensor = np.random.randn(batch_size, *input_shape).astype(np.float32)
