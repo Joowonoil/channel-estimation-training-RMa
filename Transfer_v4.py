@@ -89,8 +89,8 @@ class TransferLearningEngine: # 전이 학습 엔진 클래스 정의
         
         # 훈련 데이터셋 및 데이터로더 가져오기 (설정에 따라 RMa 데이터셋 로드)
         self._dataset, self._dataloader = get_dataset_and_dataloader(self._conf['dataset']) # 훈련 데이터셋 및 데이터로더 가져오기
-        # 검증 데이터셋 및 데이터로더 가져오기
-        self._val_dataset, self._val_dataloader = get_dataset_and_dataloader(self._conf['dataset'], is_validation=True) # 검증 데이터셋 및 데이터로더 가져오기 (검증 모드 활성화)
+        # 검증 데이터셋 및 데이터로더 가져오기 (검증 데이터가 없으므로 비활성화)
+        self._val_dataset, self._val_dataloader = None, None # 검증 데이터셋 비활성화
 
         # 채널 및 위상 잡음 추정 네트워크 (모델은 나중에 로드) # 채널 및 위상 잡음 추정 네트워크 (모델은 load_model 메서드에서 로드)
 
@@ -242,6 +242,10 @@ class TransferLearningEngine: # 전이 학습 엔진 클래스 정의
 
     @torch.no_grad() # 그래디언트 계산 비활성화 (평가 모드)
     def evaluate(self): # 평가 메서드
+        if self._val_dataloader is None: # 검증 데이터가 없으면
+            print("No validation data available, skipping evaluation.") # 검증 생략 메시지 출력
+            return 0.0 # 기본값 반환
+        
         self._estimator.eval() # 모델을 평가 모드로 설정 (드롭아웃 등 비활성화)
         total_nmse = 0.0 # 총 NMSE 초기화
         num_batches = 0 # 배치 카운터 초기화
