@@ -1,15 +1,15 @@
 # 데이터셋 관련 설정
 dataset:
-#  channel_type: ["RMa_Los_50000"] # 사용할 채널 타입 목록 (RMa_Los_50000 데이터셋 사용)
-  channel_type: ["InF_Los_50000", "InF_Nlos_50000"]
+  channel_type: ["RMa_Los_50000"] # 사용할 채널 타입 목록 (RMa_Los_50000 데이터셋 사용)
+#  channel_type: ["InF_Los_50000", "InF_Nlos_50000"]
 #  channel_type: ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos", "UMi_Los", "UMi_Nlos"] # 더 다양한 채널 타입 예시 (주석 처리됨)
 #  phase_noise_type: ["A", "B", "C"] # 위상 잡음 타입 목록 (주석 처리됨)
   batch_size: 32 # 학습 및 검증에 사용할 배치 크기
   noise_spectral_density: -174.0  # dBm/Hz # 잡음 스펙트럼 밀도 설정
   subcarrier_spacing: 120.0  # kHz # 서브캐리어 간격 설정
   transmit_power: 30.0  # dBm # 전송 파워 설정
-#  distance_range: [10.0, 500.0]  # meter # 거리 범위 설정 예시 (주석 처리됨)
-  distance_range: [40.0, 60.0]  # meter # 사용할 거리 범위 설정
+  distance_range: [10.0, 500.0]  # meter # 거리 범위 설정 예시 (주석 처리됨)
+#  distance_range: [40.0, 60.0]  # meter # 사용할 거리 범위 설정
   carrier_freq: 28.0  # GHz # 캐리어 주파수 설정
   mod_order: 64 # 변조 방식 차수 설정 (예: 64-QAM)
   ref_conf_dict: # 참조 신호 설정 딕셔너리
@@ -46,10 +46,10 @@ training:
   early_stopping_verbose: True # Early Stopping 상세 출력 여부
   device: 'cuda:0' # 훈련에 사용할 디바이스 (예: 'cuda:0', 'cpu')
   use_wandb: True # Weights & Biases 로깅 사용 여부
-  wandb_proj: 'DNN_channel_estimation_Transfer_Learning_LoRA_paper' # WandB 프로젝트 이름 (v4 및 LoRA 반영)
+  wandb_proj: 'DNN_channel_estimation_RMa_LoRA_Transfer' # WandB 프로젝트 이름 (RMa LoRA 전이학습)
   pretrained_model_name: 'Large_estimator_PreLN' # 로드할 사전 훈련된 모델 이름 (기존 v3와 동일한 기본 모델 사용)
   ch_loss_weight: 1 # 채널 손실에 적용할 가중치
-  saved_model_name: 'Large_estimator_PreLN_2_InF' # 훈련 완료 후 저장할 모델 이름 (v4 및 LoRA 반영)
+  saved_model_name: 'Large_estimator_PreLN_2_RMa' # 훈련 완료 후 저장할 모델 이름 (RMa LoRA 전이학습)
   num_freeze_layers: 0 # LoRA 방식을 사용하므로 Transformer 레이어 프리징은 0으로 설정 (LoRA 레이어만 학습)
   model_load_mode: 'pretrained' # 모델 로드 방식 선택: 'pretrained' (사전 학습 가중치 로드) 또는 'finetune' (기존 체크포인트 로드)
   load_model_path: '' # 'finetune' 모드일 때 불러올 모델 경로 (예: 'saved_model/your_model_name.pt')

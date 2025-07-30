@@ -1,15 +1,15 @@
-# DNN Channel Estimation Training
+# DNN Channel Estimation Training - RMa
 
-> PyTorch 기반 DMRS 채널 추정을 위한 DNN 모델 훈련 시스템
+> PyTorch 기반 RMa 채널 환경에서의 DMRS 채널 추정을 위한 LoRA 전이학습 시스템
 
 ## 🚀 빠른 시작 (Vast AI)
 
 ```bash
 # 1. 프로젝트 클론 (Git LFS로 모든 데이터 자동 다운로드)
-git clone https://github.com/joowonoil/channel-estimation-training.git
-cd channel-estimation-training
+git clone https://github.com/joowonoil/channel-estimation-training-RMa.git
+cd channel-estimation-training-RMa
 
-# 2. 바로 실행
+# 2. RMa LoRA 전이학습 실행
 python Transfer_v4.py
 ```
 
@@ -69,12 +69,10 @@ python tensorrt_conversion_v4.py
 
 ## 📊 데이터셋
 
-### 채널 타입
-- **InF (Indoor Factory)**: Los/NLos
-- **InH (Indoor Hotspot)**: Los/NLos  
-- **RMa (Rural Macro)**: Los/NLos
-- **UMa (Urban Macro)**: Los/NLos
-- **UMi (Urban Micro)**: Los/NLos
+### 채널 타입 (RMa 특화)
+- **RMa (Rural Macro)**: Los 50000 샘플
+- 광대역 시골 환경에서의 매크로 셀 채널 특성
+- LoRA 전이학습을 통한 효율적 모델 적응
 
 ### 데이터 형식
 - **PDP 파일**: `*.mat` (MATLAB 형식)
@@ -145,4 +143,4 @@ wandb login
 
 ---
 
-**🎯 목표**: DMRS 기반 5G/6G 채널 추정의 정확도와 효율성 향상
+**🎯 목표**: RMa 채널 환경에서 LoRA 전이학습을 통한 DMRS 기반 5G/6G 채널 추정 성능 향상
