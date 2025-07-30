@@ -383,7 +383,7 @@ if __name__ == "__main__": # 스크립트 직접 실행 시 실행되는 코드 
         'is_channel': True, # 채널 사용 여부
         'is_noise': True # 잡음 사용 여부
     }
-    dataset, dataloader = get_dataset_and_dataloader(params=param_dict) # 데이터셋 및 데이터로더 가져오기
+    # dataset, dataloader = get_dataset_and_dataloader(params=param_dict) # 데이터셋 및 데이터로더 가져오기 (엔진에서 처리하므로 불필요)
     conf_file = 'config_transfer_v4.yaml' # v4 설정 파일 사용
     engine = TransferLearningEngine(conf_file) # TransferLearningEngine 객체 생성 (파라미터는 설정 파일에서 로드)
     engine.load_model() # 모델 로드 및 초기화
