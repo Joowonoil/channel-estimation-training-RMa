@@ -28,14 +28,14 @@ else
     echo "❌ GPU 확인 실패"
 fi
 
-# 5. RMa 프로젝트 클론
-echo "📥 RMa 채널 추정 프로젝트 클론..."
-if [ -d "channel-estimation-training-RMa" ]; then
-    rm -rf channel-estimation-training-RMa
+# 5. InF 프로젝트 클론
+echo "📥 InF 채널 추정 프로젝트 클론..."
+if [ -d "channel-estimation-training" ]; then
+    rm -rf channel-estimation-training
 fi
 
-git clone https://github.com/joowonoil/channel-estimation-training-RMa.git > /dev/null 2>&1
-cd channel-estimation-training-RMa
+git clone https://github.com/joowonoil/channel-estimation-training.git > /dev/null 2>&1
+cd channel-estimation-training
 
 # 6. Git LFS 데이터 다운로드
 echo "💾 Git LFS 데이터 다운로드 (약 1-2분 소요)..."
@@ -52,7 +52,7 @@ echo "🎉 설정 완료!"
 echo "📁 작업 디렉토리: $(pwd)"
 echo "🚀 실행 명령어: python Transfer_v4.py"
 echo ""
-echo "📊 WandB 프로젝트: https://wandb.ai/joowon0210/DNN_channel_estimation_RMa_LoRA_Transfer"
+echo "📊 WandB 프로젝트: https://wandb.ai/joowon0210/DNN_channel_estimation_InF_LoRA_Transfer"
 echo ""
 
 # 9. 최종 상태 확인

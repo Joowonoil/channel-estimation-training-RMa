@@ -7,7 +7,7 @@
 ### 🎯 완전 자동 설치 (권장)
 ```bash
 # 새 Vast AI 인스턴스에서 이 한 줄만 실행
-curl -sSL https://raw.githubusercontent.com/joowonoil/channel-estimation-training-RMa/main/setup_vast_ai.sh | bash
+curl -sSL https://raw.githubusercontent.com/joowonoil/channel-estimation-training/main/setup_vast_ai.sh | bash
 
 # 설치 완료 후 바로 실행
 python Transfer_v4.py
@@ -16,10 +16,10 @@ python Transfer_v4.py
 ### 📋 수동 설치
 ```bash
 # 1. 프로젝트 클론 (Git LFS로 모든 데이터 자동 다운로드)
-git clone https://github.com/joowonoil/channel-estimation-training-RMa.git
-cd channel-estimation-training-RMa
+git clone https://github.com/joowonoil/channel-estimation-training.git
+cd channel-estimation-training
 
-# 2. RMa LoRA 전이학습 실행
+# 2. InF LoRA 전이학습 실행
 python Transfer_v4.py
 ```
 
@@ -79,9 +79,9 @@ python tensorrt_conversion_v4.py
 
 ## 📊 데이터셋
 
-### 채널 타입 (RMa 특화)
-- **RMa (Rural Macro)**: Los 50000 샘플
-- 광대역 시골 환경에서의 매크로 셀 채널 특성
+### 채널 타입 (InF 특화)
+- **InF (Indoor Factory)**: Los/Nlos 50000 샘플
+- 실내 공장 환경에서의 채널 특성
 - LoRA 전이학습을 통한 효율적 모델 적응
 
 ### 데이터 형식
@@ -153,4 +153,4 @@ wandb login
 
 ---
 
-**🎯 목표**: RMa 채널 환경에서 LoRA 전이학습을 통한 DMRS 기반 5G/6G 채널 추정 성능 향상
+**🎯 목표**: InF 채널 환경에서 LoRA 전이학습을 통한 DMRS 기반 5G/6G 채널 추정 성능 향상

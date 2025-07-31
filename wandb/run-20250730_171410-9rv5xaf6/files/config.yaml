@@ -1,0 +1,116 @@
+wandb_version: 1
+
+dataset:
+  desc: null
+  value:
+    channel_type:
+    - RMa_Los_50000
+    batch_size: 32
+    noise_spectral_density: -174.0
+    subcarrier_spacing: 120.0
+    transmit_power: 30.0
+    distance_range:
+    - 10.0
+    - 500.0
+    carrier_freq: 28.0
+    mod_order: 64
+    ref_conf_dict:
+      dmrs:
+      - 0
+      - 3072
+      - 6
+    fft_size: 4096
+    num_guard_subcarriers: 1024
+    num_symbol: 14
+    cp_length: 590
+    max_random_tap_delay_cp_proportion: 0.2
+    rnd_seed: 0
+    num_workers: 0
+    is_phase_noise: false
+    is_channel: true
+    is_noise: true
+training:
+  desc: null
+  value:
+    lr: 1.0e-05
+    weight_decay: 1.0e-06
+    max_norm: 1.0
+    num_iter: 200000
+    logging_step: 10
+    evaluation_step: 1000
+    evaluation_batch_size: 4
+    pn_train_start_iter: 50000
+    use_scheduler: true
+    num_warmup_steps: 0
+    use_early_stopping: false
+    checkpoint_path: saved_model/checkpoint_v4.pt
+    early_stopping_verbose: true
+    device: cuda:0
+    use_wandb: true
+    wandb_proj: DNN_channel_estimation_RMa_LoRA_Transfer
+    pretrained_model_name: Large_estimator_PreLN
+    ch_loss_weight: 1
+    saved_model_name: Large_estimator_PreLN_2_RMa
+    num_freeze_layers: 0
+    model_load_mode: pretrained
+    load_model_path: ''
+    model_save_step: 100000
+ch_estimation:
+  desc: null
+  value:
+    cond:
+      length: 3072
+      in_channels: 2
+      step_size: 12
+      steps_per_token: 1
+    transformer:
+      length: 3072
+      channels: 2
+      num_layers: 4
+      d_model: 128
+      n_token: 256
+      n_head: 8
+      dim_feedforward: 1024
+      dropout: 0.1
+      activation: relu
+    peft:
+      peft_type: LORA
+      r: 8
+      lora_alpha: 8
+      target_modules:
+      - mha_q_proj
+      - mha_k_proj
+      - mha_v_proj
+      - out_proj
+      - ffnn_linear1
+      - ffnn_linear2
+      lora_dropout: 0.1
+_wandb:
+  desc: null
+  value:
+    python_version: 3.11.9
+    cli_version: 0.17.8
+    framework: huggingface
+    huggingface_version: 4.44.2
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1753863250
+    t:
+      1:
+      - 1
+      - 11
+      - 41
+      - 49
+      - 55
+      - 71
+      - 98
+      3:
+      - 16
+      - 23
+      4: 3.11.9
+      5: 0.17.8
+      6: 4.44.2
+      8:
+      - 3
+      - 5
+      13: windows-amd64

@@ -199,10 +199,36 @@ class TransferLearningEngine: # 전이 학습 엔진 클래스 정의
             ch_loss = ch_nmse * ch_loss_weight # 채널 손실 계산 (NMSE에 가중치 적용)
 
             self._ch_optimizer.zero_grad() # 옵티마이저의 그래디언트 초기화
-            ch_loss.backward() # 역전파를 통해 그래디언트 계산
-            # LoRA 파라미터만 클리핑
-            torch.nn.utils.clip_grad_norm_(self._estimator.parameters(), max_norm=self._conf['training']['max_norm']) # 그래디언트 클리핑 (PEFT 모델의 모든 학습 가능한 파라미터에 적용)
-            self._ch_optimizer.step() # 옵티마이저 스텝 (파라미터 업데이트)
+            
+            # 역전파 전 학습 가능한 파라미터 확인
+            trainable_params = [p for p in self._estimator.parameters() if p.requires_grad]
+            if len(trainable_params) == 0:
+                print(f"ERROR: No trainable parameters found at iteration {it + 1}")
+                print("This usually happens after model saving. Checking parameter states...")
+                for name, param in self._estimator.named_parameters():
+                    if 'lora' in name.lower():
+                        print(f"LoRA param {name}: requires_grad={param.requires_grad}")
+                break  # 훈련 중단
+            
+            try:
+                ch_loss.backward() # 역전파를 통해 그래디언트 계산
+                # LoRA 파라미터만 클리핑
+                torch.nn.utils.clip_grad_norm_(self._estimator.parameters(), max_norm=self._conf['training']['max_norm']) # 그래디언트 클리핑 (PEFT 모델의 모든 학습 가능한 파라미터에 적용)
+                self._ch_optimizer.step() # 옵티마이저 스텝 (파라미터 업데이트)
+            except RuntimeError as e:
+                print(f"ERROR during backward pass at iteration {it + 1}: {e}")
+                print(f"ch_loss requires_grad: {ch_loss.requires_grad}")
+                print(f"ch_loss grad_fn: {ch_loss.grad_fn}")
+                print("Checking model parameters:")
+                trainable_count = 0
+                for name, param in self._estimator.named_parameters():
+                    if param.requires_grad:
+                        trainable_count += 1
+                        print(f"  {name}: requires_grad={param.requires_grad}, shape={param.shape}")
+                print(f"Total trainable parameters: {trainable_count}")
+                if trainable_count == 0:
+                    print("No trainable parameters found - this is the root cause of the error")
+                break  # 훈련 중단
 
             # 스케줄러 사용 시 학습률 업데이트
             if self._ch_scheduler: # 스케줄러 사용 설정이 True이면
@@ -310,56 +336,81 @@ class TransferLearningEngine: # 전이 학습 엔진 클래스 정의
     def save_combined_model_as_pt(self, file_name): # 기본 모델과 LoRA 가중치가 결합된 전체 모델의 state_dict를 .pt 파일로 저장하는 메서드
         from model.estimator import Estimator
         
-        path = Path(__file__).parents[0].resolve() / 'saved_model' # 모델 저장 디렉토리 경로 생성
-        path.mkdir(parents=True, exist_ok=True) # 모델 저장 디렉토리가 없으면 생성
-        full_path = path / f"{file_name}.pt" # .pt 확장자를 포함한 전체 경로 생성
-        
-        # LoRA 가중치를 원본 모델에 병합
-        merged_v4_model = self._estimator.merge_and_unload() # LoRA 가중치를 원본 모델에 병합
-        
-        # 원본 Estimator 구조로 변환하여 engine.py와 완전히 호환되도록 함
-        original_estimator = Estimator('config.yaml').to(self._device)
-        merged_v4_state_dict = merged_v4_model.state_dict()
-        
-        # v4 모델의 파라미터를 원본 모델 형태로 변환
-        original_state_dict = {}
-        for key, value in merged_v4_state_dict.items():
-            # v4에서 추가된 projection layer들을 원본 MHA 구조에 맞게 변환
-            if any(proj in key for proj in ['mha_q_proj', 'mha_k_proj', 'mha_v_proj']):
-                # v4의 projection layer들을 원본 MultiheadAttention의 개별 proj로 매핑
-                if 'mha_q_proj' in key:
-                    if 'weight' in key:
-                        new_key = key.replace('mha_q_proj.weight', 'mha.q_proj_weight')
+        try:
+            print(f"Starting model save process for {file_name}")
+            
+            # 현재 모델의 학습 가능한 파라미터 상태 확인
+            trainable_params = [p for p in self._estimator.parameters() if p.requires_grad]
+            print(f"Number of trainable parameters before save: {len(trainable_params)}")
+            
+            path = Path(__file__).parents[0].resolve() / 'saved_model' # 모델 저장 디렉토리 경로 생성
+            path.mkdir(parents=True, exist_ok=True) # 모델 저장 디렉토리가 없으면 생성
+            full_path = path / f"{file_name}.pt" # .pt 확장자를 포함한 전체 경로 생성
+            
+            # LoRA 가중치를 원본 모델에 병합 (원본 모델을 복사해서 사용)
+            # 원본 PEFT 모델의 상태를 보존하기 위해 복사본에서 merge_and_unload 수행
+            import copy
+            estimator_copy = copy.deepcopy(self._estimator)
+            merged_v4_model = estimator_copy.merge_and_unload() # LoRA 가중치를 원본 모델에 병합
+            
+            # 원본 Estimator 구조로 변환하여 engine.py와 완전히 호환되도록 함
+            original_estimator = Estimator('config.yaml').to(self._device)
+            merged_v4_state_dict = merged_v4_model.state_dict()
+            
+            # v4 모델의 파라미터를 원본 모델 형태로 변환
+            original_state_dict = {}
+            for key, value in merged_v4_state_dict.items():
+                # v4에서 추가된 projection layer들을 원본 MHA 구조에 맞게 변환
+                if any(proj in key for proj in ['mha_q_proj', 'mha_k_proj', 'mha_v_proj']):
+                    # v4의 projection layer들을 원본 MultiheadAttention의 개별 proj로 매핑
+                    if 'mha_q_proj' in key:
+                        if 'weight' in key:
+                            new_key = key.replace('mha_q_proj.weight', 'mha.q_proj_weight')
+                            original_state_dict[new_key] = value
+                        elif 'bias' in key:
+                            # q_proj_bias는 원본에서는 in_proj_bias에 포함됨 (나중에 처리)
+                            layer_idx = key.split('.')[2]
+                            q_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_q_proj.bias']
+                            k_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_k_proj.bias']
+                            v_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_v_proj.bias']
+                            original_state_dict[f'ch_tf._layers.{layer_idx}.mha.in_proj_bias'] = torch.cat([q_bias, k_bias, v_bias], dim=0)
+                    elif 'mha_k_proj' in key and 'weight' in key:
+                        new_key = key.replace('mha_k_proj.weight', 'mha.k_proj_weight')
                         original_state_dict[new_key] = value
-                    elif 'bias' in key:
-                        # q_proj_bias는 원본에서는 in_proj_bias에 포함됨 (나중에 처리)
-                        layer_idx = key.split('.')[2]
-                        q_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_q_proj.bias']
-                        k_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_k_proj.bias']
-                        v_bias = merged_v4_state_dict[f'ch_tf._layers.{layer_idx}.mha_v_proj.bias']
-                        original_state_dict[f'ch_tf._layers.{layer_idx}.mha.in_proj_bias'] = torch.cat([q_bias, k_bias, v_bias], dim=0)
-                elif 'mha_k_proj' in key and 'weight' in key:
-                    new_key = key.replace('mha_k_proj.weight', 'mha.k_proj_weight')
-                    original_state_dict[new_key] = value
-                elif 'mha_v_proj' in key and 'weight' in key:
-                    new_key = key.replace('mha_v_proj.weight', 'mha.v_proj_weight')
-                    original_state_dict[new_key] = value
-                # bias는 q_proj에서 이미 처리했으므로 건너뛰기
-                continue
-            else:
-                # 다른 파라미터들은 그대로 복사
-                original_state_dict[key] = value
-        
-        # 원본 estimator에 변환된 파라미터 로드
-        original_estimator.load_state_dict(original_state_dict)
-        
-        torch.save(original_estimator, full_path) # 원본 구조로 변환된 모델을 .pt 파일로 저장
-        print(f"Merged model (compatible with engine.py) saved to {full_path}") # 모델 저장 경로 출력
-        
-        # 추가: LoRA 가중치만 별도 저장 (디버깅/분석 목적)
-        lora_path = path / f"{file_name}_lora_weights.pt"
-        self._estimator.save_pretrained(lora_path.parent / f"{file_name}_lora_weights")
-        print(f"LoRA weights separately saved to {lora_path.parent / f'{file_name}_lora_weights'}")
+                    elif 'mha_v_proj' in key and 'weight' in key:
+                        new_key = key.replace('mha_v_proj.weight', 'mha.v_proj_weight')
+                        original_state_dict[new_key] = value
+                    # bias는 q_proj에서 이미 처리했으므로 건너뛰기
+                    continue
+                else:
+                    # 다른 파라미터들은 그대로 복사
+                    original_state_dict[key] = value
+            
+            # 원본 estimator에 변환된 파라미터 로드
+            original_estimator.load_state_dict(original_state_dict)
+            
+            torch.save(original_estimator, full_path) # 원본 구조로 변환된 모델을 .pt 파일로 저장
+            print(f"Merged model (compatible with engine.py) saved to {full_path}") # 모델 저장 경로 출력
+            
+            # 추가: LoRA 가중치만 별도 저장 (디버깅/분석 목적)
+            lora_path = path / f"{file_name}_lora_weights.pt"
+            self._estimator.save_pretrained(lora_path.parent / f"{file_name}_lora_weights")
+            print(f"LoRA weights separately saved to {lora_path.parent / f'{file_name}_lora_weights'}")
+            
+            # 저장 후 원본 PEFT 모델의 학습 가능한 파라미터 상태 재확인
+            trainable_params_after = [p for p in self._estimator.parameters() if p.requires_grad]
+            print(f"Number of trainable parameters after save: {len(trainable_params_after)}")
+            
+            # requires_grad 상태가 변경되었다면 경고 출력
+            if len(trainable_params) != len(trainable_params_after):
+                print("WARNING: Number of trainable parameters changed after model save!")
+                print("This might cause the gradient computation error in the next iteration.")
+                
+        except Exception as e:
+            print(f"Error during model saving: {e}")
+            print("Continuing training without saving...")
+            import traceback
+            traceback.print_exc()
 
 
 if __name__ == "__main__": # 스크립트 직접 실행 시 실행되는 코드 블록
