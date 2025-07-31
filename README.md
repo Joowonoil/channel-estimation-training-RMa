@@ -1,9 +1,19 @@
-# DNN Channel Estimation Training - RMa
+# DNN Channel Estimation Training
 
-> PyTorch 기반 RMa 채널 환경에서의 DMRS 채널 추정을 위한 LoRA 전이학습 시스템
+> PyTorch 기반 DMRS 채널 추정을 위한 DNN 모델 훈련 시스템
 
 ## 🚀 빠른 시작 (Vast AI)
 
+### 🎯 완전 자동 설치 (권장)
+```bash
+# 새 Vast AI 인스턴스에서 이 한 줄만 실행
+curl -sSL https://raw.githubusercontent.com/joowonoil/channel-estimation-training-RMa/main/setup_vast_ai.sh | bash
+
+# 설치 완료 후 바로 실행
+python Transfer_v4.py
+```
+
+### 📋 수동 설치
 ```bash
 # 1. 프로젝트 클론 (Git LFS로 모든 데이터 자동 다운로드)
 git clone https://github.com/joowonoil/channel-estimation-training-RMa.git
