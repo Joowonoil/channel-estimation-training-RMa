@@ -1,9 +1,6 @@
 # 데이터셋 관련 설정
 dataset:
-#  channel_type: ["RMa_Los_50000"] # RMa Transfer
   channel_type: ["InF_Los_50000", "InF_Nlos_50000"] # InF Transfer
-#  channel_type: ["InF_Los", "InF_Nlos", "InH_Los", "InH_Nlos", "RMa_Los", "RMa_Nlos", "UMa_Los", "UMa_Nlos", "UMi_Los", "UMi_Nlos"] # 더 다양한 채널 타입 예시 (주석 처리됨)
-#  phase_noise_type: ["A", "B", "C"] # 위상 잡음 타입 목록 (주석 처리됨)
   batch_size: 32 # 학습 및 검증에 사용할 배치 크기
   noise_spectral_density: -174.0  # dBm/Hz # 잡음 스펙트럼 밀도 설정
   subcarrier_spacing: 120.0  # kHz # 서브캐리어 간격 설정
@@ -14,7 +11,6 @@ dataset:
   mod_order: 64 # 변조 방식 차수 설정 (예: 64-QAM)
   ref_conf_dict: # 참조 신호 설정 딕셔너리
     'dmrs': [0, 3072, 6] # DMRS 설정 [시작 인덱스, 끝 인덱스, 스텝] - 원래 모델과 동일하게 복원
-#    'ptrs': [6, 3072, 48] # PTRS 설정 예시 (주석 처리됨)
   fft_size: 4096 # FFT 크기 설정
   num_guard_subcarriers: 1024 # 가드 서브캐리어 수 설정
   num_symbol: 14 # OFDM 심볼 수 설정
@@ -25,14 +21,13 @@ dataset:
   is_phase_noise: False # 위상 잡음 적용 여부
   is_channel: True # 채널 효과 적용 여부
   is_noise: True # 잡음 적용 여부
-#  validation_data_path: 'validation/validation_sample_data_InF_Los_withoutPN_50m' # 검증 데이터셋 파일 경로
 
 # 훈련 관련 설정
 training:
   lr: 0.00001 # 학습률 (Learning Rate) 설정
   weight_decay: 0.000001 # 가중치 감소 (Weight Decay) 설정 (L2 정규화)
   max_norm: 1.0 # 그래디언트 클리핑을 위한 최대 L2 노름 값
-  num_iter: 200000 # 총 훈련 이터레이션 수 (테스트용으로 축소)
+  num_iter: 200000 # 총 훈련 이터레이션 수
   logging_step: 10 # 훈련 중 로그를 기록할 이터레이션 간격
   evaluation_step: 1000 # 검증 및 평가를 수행할 이터레이션 간격
   evaluation_batch_size: 4 # 검증 시 사용할 배치 크기
@@ -40,14 +35,12 @@ training:
   use_scheduler: True # 학습률 스케줄러 사용 여부
   num_warmup_steps: 0 # warm-up 단계 수 (스케줄러 사용 시 유효)
   use_early_stopping: False # Early Stopping 사용 여부
-#  patience: 500 # Early Stopping patience (개선되지 않아도 기다릴 이터레이션 수)
-#  delta: 0.0001 # Early Stopping delta (개선으로 간주하기 위한 최소 변화량)
-  checkpoint_path: 'saved_model/checkpoint_v4.pt' # Early Stopping 체크포인트 모델 저장 경로 (v4로 변경)
+  checkpoint_path: 'saved_model/checkpoint_v4_InF.pt' # Early Stopping 체크포인트 모델 저장 경로
   early_stopping_verbose: True # Early Stopping 상세 출력 여부
   device: 'cuda:0' # 훈련에 사용할 디바이스 (예: 'cuda:0', 'cpu')
   use_wandb: True # Weights & Biases 로깅 사용 여부
   wandb_proj: 'DNN_channel_estimation_InF_LoRA_Transfer' # WandB 프로젝트 이름 (InF LoRA 전이학습)
-  pretrained_model_name: 'Large_estimator_PreLN' # 로드할 사전 훈련된 모델 이름 (기존 v3와 동일한 기본 모델 사용)
+  pretrained_model_name: 'Large_estimator_PreLN' # 로드할 사전 훈련된 모델 이름
   ch_loss_weight: 1 # 채널 손실에 적용할 가중치
   saved_model_name: 'Large_estimator_PreLN_2_InF' # 훈련 완료 후 저장할 모델 이름 (InF LoRA 전이학습)
   num_freeze_layers: 0 # LoRA 방식을 사용하므로 Transformer 레이어 프리징은 0으로 설정 (LoRA 레이어만 학습)
@@ -77,22 +70,5 @@ ch_estimation:
     peft_type: LORA # 사용할 PEFT 타입 (LoRA)
     r: 8 # LoRA 랭크 (rank)
     lora_alpha: 8 # LoRA 스케일링 팩터 (alpha)
-    target_modules: ["mha_q_proj", "mha_k_proj", "mha_v_proj", "out_proj", "ffnn_linear1", "ffnn_linear2"] # LoRA를 적용할 모듈 이름 목록 (cond_mha projection 제거)
+    target_modules: ["mha_q_proj", "mha_k_proj", "mha_v_proj", "out_proj", "ffnn_linear1", "ffnn_linear2"] # LoRA를 적용할 모듈 이름 목록
     lora_dropout: 0.1 # LoRA 드롭아웃 비율
-
-#pn_estimation: # 위상 잡음 추정 모델 관련 설정 (주석 처리됨)
-#  cond: # ConditionNetwork 설정 (주석 처리됨)
-#  length: 896 # 입력 데이터 길이 (주석 처리됨)
-#  in_channels: 2 # 입력 채널 수 (주석 처리됨)
-#  step_size: 64 # 스텝 크기 (주석 처리됨)
-#  steps_per_token: 1 # 토큰 당 스텝 수 (주석 처리됨)
-#transformer: # Transformer 모델 설정 (주석 처리됨)
-#  length: 14 # 입력 데이터 길이 (주석 처리됨)
-#  channels: 1 # 입력 채널 수 (주석 처리됨)
-#  num_layers: 2        # 레이어 수 (주석 처리됨)
-#  d_model: 32          # 모델 차원 (주석 처리됨)
-#  n_token: 14 # 토큰 수 (주석 처리됨)
-#  n_head: 2            # 어텐션 헤드 수 (주석 처리됨)
-#  dim_feedforward: 128 # 피드포워드 네트워크 차원 (주석 처리됨)
-#  dropout: 0.1         # 드롭아웃 비율 (주석 처리됨)
-#  activation: 'relu' # 활성화 함수 (주석 처리됨)

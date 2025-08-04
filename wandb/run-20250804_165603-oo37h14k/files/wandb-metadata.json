@@ -1,0 +1,53 @@
+{
+    "os": "Windows-10-10.0.26100-SP0",
+    "python": "3.11.9",
+    "heartbeatAt": "2025-08-04T07:56:04.072154",
+    "startedAt": "2025-08-04T07:56:03.366256",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\calor\\Desktop\\Channel_estimation_DMRS\\DNN_channel_estimation\\DNN_channel_estimation_training\\engine.py",
+    "codePathLocal": "engine.py",
+    "codePath": "engine.py",
+    "git": {
+        "remote": "https://github.com/joowonoil/channel-estimation-training.git",
+        "commit": "1c676c1a14f4d5358a23e8eb8df7d4e779f23682"
+    },
+    "email": "joowonoil@g.skku.edu",
+    "root": "C:/Users/calor/Desktop/Channel_estimation_DMRS/DNN_channel_estimation/DNN_channel_estimation_training",
+    "host": "Joowon-Lab2",
+    "username": "calor",
+    "executable": "C:\\Users\\calor\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "cpu_count": 12,
+    "cpu_count_logical": 24,
+    "cpu_freq": {
+        "current": 3701.0,
+        "min": 0.0,
+        "max": 3701.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3701.0,
+            "min": 0.0,
+            "max": 3701.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 1862.1249961853027,
+            "used": 1679.9552879333496
+        }
+    },
+    "gpu": "NVIDIA GeForce RTX 4080 SUPER",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 4080 SUPER",
+            "memory_total": 17171480576
+        }
+    ],
+    "memory": {
+        "total": 63.11496353149414
+    }
+}
