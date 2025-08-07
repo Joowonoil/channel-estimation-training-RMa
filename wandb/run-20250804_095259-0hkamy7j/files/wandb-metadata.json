@@ -1,0 +1,40 @@
+{
+  "os":  "Linux-5.15.0-52-generic-x86_64-with-glibc2.35",
+  "python":  "CPython 3.11.9",
+  "startedAt":  "2025-08-04T09:52:59.028625Z",
+  "program":  "/root/channel-estimation-training-RMa/Transfer_v4_RMa.py",
+  "codePath":  "Transfer_v4_RMa.py",
+  "codePathLocal":  "Transfer_v4_RMa.py",
+  "git":  {
+    "remote":  "https://github.com/Joowonoil/channel-estimation-training-RMa.git",
+    "commit":  "065815abc548776d1970d9c7eaca92ac955de97e"
+  },
+  "email":  "joowonoil@g.skku.edu",
+  "root":  "/root/channel-estimation-training-RMa",
+  "host":  "45af7c9bf546",
+  "executable":  "/opt/conda/bin/python",
+  "cpu_count":  96,
+  "cpu_count_logical":  192,
+  "gpu":  "NVIDIA GeForce RTX 4090",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "42949672960",
+      "used":  "319131648"
+    }
+  },
+  "memory":  {
+    "total":  "2151669825536"
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 4090",
+      "memoryTotal":  "25757220864",
+      "cudaCores":  16384,
+      "architecture":  "Ada",
+      "uuid":  "GPU-99ad11d5-b87b-e343-b712-6f014195bc1a"
+    }
+  ],
+  "cudaVersion":  "12.6",
+  "writerId":  "r0sp0boefalu2g9wz1ak2vplegg5xw15"
+}
